@@ -341,7 +341,7 @@ internal sealed class GraphCalendarProvider : ICalendarProvider
         {
             TenantId = _tenantId,
             ClientId = _clientId,
-            DeviceCodeCallback = callback =>
+            DeviceCodeCallback = (callback, cancellationToken) =>
             {
                 MessageBox.Show(callback.Message, "Microsoft sign-in required", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return Task.CompletedTask;
