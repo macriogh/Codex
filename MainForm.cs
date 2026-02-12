@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 using System.Windows.Forms;
-using Microsoft.Office.Interop.Outlook;
+using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace OutlookAvailabilitySummarizer;
 
@@ -96,7 +96,7 @@ public sealed class MainForm : Form
             var summary = CreateAvailabilitySummary(request);
             _summaryText.Text = summary;
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             _summaryText.Text = $"Could not summarize Outlook availability: {ex.Message}";
         }
@@ -123,16 +123,16 @@ public sealed class MainForm : Form
 
     private static string CreateAvailabilitySummary(AvailabilityRequest request)
     {
-        Application? outlook = null;
-        NameSpace? session = null;
-        MAPIFolder? calendar = null;
-        Items? items = null;
+        Outlook.Application? outlook = null;
+        Outlook.NameSpace? session = null;
+        Outlook.MAPIFolder? calendar = null;
+        Outlook.Items? items = null;
 
         try
         {
-            outlook = new Application();
+            outlook = new Outlook.Application();
             session = outlook.GetNamespace("MAPI");
-            calendar = session.GetDefaultFolder(OlDefaultFolders.olFolderCalendar);
+            calendar = session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar);
             items = calendar.Items;
             items.IncludeRecurrences = true;
             items.Sort("[Start]");
@@ -249,18 +249,18 @@ public readonly record struct TimeInterval(DateTime Start, DateTime End);
 
 internal static class OutlookIntervalBuilder
 {
-    public static System.Collections.Generic.List<TimeInterval> GetBusyIntervals(Items items, DateTime windowStart, DateTime windowEnd)
+    public static System.Collections.Generic.List<TimeInterval> GetBusyIntervals(Outlook.Items items, DateTime windowStart, DateTime windowEnd)
     {
         var busy = new System.Collections.Generic.List<TimeInterval>();
 
         for (var i = 1; i <= items.Count; i++)
         {
-            if (items[i] is not AppointmentItem appt)
+            if (items[i] is not Outlook.AppointmentItem appt)
             {
                 continue;
             }
 
-            var isBusy = appt.BusyStatus is OlBusyStatus.olBusy or OlBusyStatus.olTentative or OlBusyStatus.olOutOfOffice;
+            var isBusy = appt.BusyStatus is Outlook.OlBusyStatus.olBusy or Outlook.OlBusyStatus.olTentative or Outlook.OlBusyStatus.olOutOfOffice;
             if (!isBusy)
             {
                 continue;
